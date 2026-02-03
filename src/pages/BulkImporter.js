@@ -5,10 +5,11 @@ function BulkImporter() {
   const [jsonData, setJsonData] = useState("");
   const [status, setStatus] = useState(null);
 
+  const API_URL = process.env.REACT_APP_API_URL_LOCAL || process.env.REACT_APP_API_URL;
   const handleImport = async () => {
     try {
       const parsedData = JSON.parse(jsonData);
-      const res = await fetch("http://localhost:5000/api/admin/bulk-add", {
+      const res = await fetch(`${API_URL}/admin/bulk-add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(parsedData),

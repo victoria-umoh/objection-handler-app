@@ -11,9 +11,10 @@ function ObjectionViewer() {
   const [tone, setTone] = useState("calm"); // Default tone
   const [script, setScript] = useState("");
 
+  const API_URL = process.env.REACT_APP_API_URL_LOCAL || process.env.REACT_APP_API_URL;
   // 1. Fetch data from your new MongoDB backend
   useEffect(() => {
-    fetch("http://localhost:5000/api/objections")
+    fetch(`${API_URL}/objections`)
       .then((res) => res.json())
       .then((data) => setObjections(data))
       .catch((err) => console.error("Error fetching:", err));

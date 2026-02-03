@@ -21,8 +21,9 @@ function Admin() {
     if (!formData.title) return setStatus({ type: "danger", msg: "Title is required!" });
 
     setLoading(true);
+    const API_URL = process.env.REACT_APP_API_URL_LOCAL || process.env.REACT_APP_API_URL;
     try {
-      const res = await fetch("http://localhost:5000/api/admin/add-objection", {
+      const res = await fetch(`${API_URL}/admin/add-objection`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData) // Flattened to match your backend's ...req.body

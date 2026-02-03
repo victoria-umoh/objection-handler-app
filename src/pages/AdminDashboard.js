@@ -6,8 +6,9 @@ function AdminDashboard() {
 
   useEffect(() => { fetchScripts(); }, []);
 
+  const API_URL = process.env.REACT_APP_API_URL_LOCAL || process.env.REACT_APP_API_URL;
   const fetchScripts = async () => {
-    const res = await fetch("http://localhost:5000/api/objections");
+    const res = await fetch(`${API_URL}/objections`);
     const data = await res.json();
     setScripts(data);
   };
@@ -15,8 +16,8 @@ function AdminDashboard() {
   const handleSave = async () => {
     const method = selectedScript._id ? "PUT" : "POST";
     const url = selectedScript._id 
-      ? `http://localhost:5000/api/admin/objections/${selectedScript._id}`
-      : `http://localhost:5000/api/admin/add-objection`;
+      ? `${API_URL}/admin/objections/${selectedScript._id}`
+      : `${API_URL}/admin/add-objection`;
 
     await fetch(url, {
       method,
@@ -97,7 +98,7 @@ function AdminDashboard() {
               {selectedScript._id && (
                 <Button variant="outline-danger" onClick={async () => {
                   if(window.confirm("Delete?")) {
-                    await fetch(`http://localhost:5000/api/admin/objections/${selectedScript._id}`, { method: "DELETE" });
+                    await fetch(`${API_URL}/admin/objections/${selectedScript._id}`, { method: "DELETE" });
                     fetchScripts();
                     setSelectedScript({ title: "", calm: "", confident: "", close: "" });
                   }

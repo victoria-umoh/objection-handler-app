@@ -6,10 +6,11 @@ function ManageScripts() {
   const [showModal, setShowModal] = useState(false);
   const [currentScript, setCurrentScript] = useState({ title: "", calm: "", confident: "", close: "" });
 
+  const API_URL = process.env.REACT_APP_API_URL_LOCAL || process.env.REACT_APP_API_URL;
   useEffect(() => { fetchScripts(); }, []);
 
   const fetchScripts = async () => {
-    const res = await fetch("http://localhost:5000/api/objections");
+    const res = await fetch(`${API_URL}/objections`);
     const data = await res.json();
     setScripts(data);
   };
@@ -22,7 +23,7 @@ function ManageScripts() {
 
   // SAVE UPDATE
   const handleUpdate = async () => {
-    await fetch(`http://localhost:5000/api/admin/objections/${currentScript._id}`, {
+    await fetch(`${API_URL}/admin/objections/${currentScript._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(currentScript),
@@ -34,7 +35,7 @@ function ManageScripts() {
   // DELETE SCRIPT
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure? This will remove the ACA script permanently.")) {
-      await fetch(`http://localhost:5000/api/admin/objections/${id}`, { method: "DELETE" });
+      await fetch(`${API_URL}/admin/objections/${id}`, { method: "DELETE" });
       fetchScripts();
     }
   };

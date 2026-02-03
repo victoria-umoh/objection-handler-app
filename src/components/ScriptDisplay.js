@@ -6,11 +6,12 @@ function ScriptDisplay({ script, objection, tone, setScript }) {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  const API_URL = process.env.REACT_APP_API_URL_LOCAL || process.env.REACT_APP_API_URL;
   const generateAI = async () => {
     if (!objection) return alert("Select an objection first!");
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/generate-script", {
+      const res = await fetch(`${API_URL}/generate-script`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ objection, tone })
