@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import ObjectionDropdown from "../components/ObjectionDropdown";
 import ToneButtons from "../components/ToneButtons";
@@ -13,12 +14,16 @@ function ObjectionViewer() {
 
   const API_URL = process.env.REACT_APP_API_URL_LOCAL || process.env.REACT_APP_API_URL;
   // 1. Fetch data from your new MongoDB backend
-  useEffect(() => {
+  const fetchScripts = React.useCallback(() => {
     fetch(`${API_URL}/objections`)
       .then((res) => res.json())
       .then((data) => setObjections(data))
       .catch((err) => console.error("Error fetching:", err));
-  }, []);
+  }, [API_URL]);
+
+  useEffect(() => {
+    fetchScripts();
+  }, [fetchScripts]);
 
   // 2. Handle selection logic
   const handleSelect = (id) => {

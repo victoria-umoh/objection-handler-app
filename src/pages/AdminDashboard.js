@@ -1,17 +1,17 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import { Container, Row, Col, ListGroup, Form, Button, Card, Badge } from "react-bootstrap";
 function AdminDashboard() {
   const [scripts, setScripts] = useState([]);
   const [selectedScript, setSelectedScript] = useState({ title: "", calm: "", confident: "", close: "" });
-
-  useEffect(() => { fetchScripts(); }, []);
-
   const API_URL = process.env.REACT_APP_API_URL_LOCAL || process.env.REACT_APP_API_URL;
-  const fetchScripts = async () => {
+  const fetchScripts = React.useCallback(async () => {
     const res = await fetch(`${API_URL}/objections`);
     const data = await res.json();
     setScripts(data);
-  };
+  }, [API_URL]);
+
+  useEffect(() => { fetchScripts(); }, [fetchScripts]);
 
   const handleSave = async () => {
     const method = selectedScript._id ? "PUT" : "POST";

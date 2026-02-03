@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import { Container, Table, Button, Modal, Form, Badge, Card } from "react-bootstrap";
 
@@ -7,13 +8,13 @@ function ManageScripts() {
   const [currentScript, setCurrentScript] = useState({ title: "", calm: "", confident: "", close: "" });
 
   const API_URL = process.env.REACT_APP_API_URL_LOCAL || process.env.REACT_APP_API_URL;
-  useEffect(() => { fetchScripts(); }, []);
-
-  const fetchScripts = async () => {
+  const fetchScripts = React.useCallback(async () => {
     const res = await fetch(`${API_URL}/objections`);
     const data = await res.json();
     setScripts(data);
-  };
+  }, [API_URL]);
+
+  useEffect(() => { fetchScripts(); }, [fetchScripts]);
 
   // OPEN MODAL FOR EDIT
   const handleEdit = (script) => {

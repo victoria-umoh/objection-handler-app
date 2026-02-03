@@ -5,7 +5,7 @@ import { Navbar, Nav, Container } from "react-bootstrap";
 import ManageScripts from "./pages/ManageScripts";
 import AdminDashboard from "./pages/AdminDashboard";
 import BulkImporter from "./pages/BulkImporter";
-
+import DiscoveryManager from "./pages/DiscoveryManager";
 
 function App() {
   return (
@@ -19,6 +19,7 @@ function App() {
             <Nav.Link as={Link} to="/manage">Manage Scripts</Nav.Link>
             <Nav.Link as={Link} to="/bulk">Bulk Importer</Nav.Link>
             <Nav.Link as={Link} to="/admin_dashboard">Dashboard</Nav.Link>
+            <Nav.Link as={Link} to="/discovery_manager">Discovery Manager</Nav.Link>
           </Nav>
         </Container>
       </Navbar>
@@ -29,6 +30,7 @@ function App() {
         <Route path="/manage" element={<ManageScripts />} />
         <Route path="/admin_dashboard" element={<AdminDashboard />} />
         <Route path="/bulk" element={<BulkImporter />} />
+        <Route path="/discovery_manager" element={<DiscoveryManager />} />
       </Routes>
     </Router>
   );

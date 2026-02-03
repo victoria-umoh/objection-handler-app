@@ -1,52 +1,152 @@
-import { Accordion, Card, Badge } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Accordion, Card, Button, Form, Row, Col, Stack } from "react-bootstrap";
+import ScriptPreview from "./ScriptPreview";  
 
-function DiscoveryScript() {
+function DiscoveryScriptEditor({ script, onUpdate }) {
+  // Local state for editing. Re-syncs if the parent changes 'script'
+  const [localScript, setLocalScript] = useState(null);
+  const [isPreview, setIsPreview] = useState(false);
+
+  useEffect(() => {
+    if (script) setLocalScript(JSON.parse(JSON.stringify(script)));
+  }, [script]);
+
+  if (!localScript) return null;
+
+  const updatePhase = (idx, field, value) => {
+    const updatedPhases = [...localScript.phases];
+    updatedPhases[idx][field] = value;
+    setLocalScript({ ...localScript, phases: updatedPhases });
+  };
+
+  const addQuestion = (pIdx) => {
+    const updatedPhases = [...localScript.phases];
+    updatedPhases[pIdx].questions.push({
+      number: updatedPhases[pIdx].questions.length + 1,
+      text: "",
+      category: "Discovery"
+    });
+    setLocalScript({ ...localScript, phases: updatedPhases });
+  };
+
+  const addPhase = () => {
+    setLocalScript({
+      ...localScript,
+      phases: [...localScript.phases, { title: "New Phase", order: localScript.phases.length, content: "", questions: [] }]
+    });
+  };
+
   return (
-    <Card className="bg-dark text-white border-info shadow-lg p-3">
-      <div className="d-flex justify-content-between">
-        <h4 className="text-info">🎙️ Discovery & Handoff</h4>
-        <Badge bg="success">Live Call Path</Badge>
+    <Card className="bg-black border-info shadow-lg p-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h5 className="text-info mb-0">Phase Configurator</h5>
+        <div className="btn-group">
+          <Button 
+            variant={!isPreview ? "info" : "outline-info"} 
+            size="sm" 
+            onClick={() => setIsPreview(false)}
+          >
+            Editor
+          </Button>
+          <Button 
+            variant={isPreview ? "info" : "outline-info"} 
+            size="sm" 
+            onClick={() => setIsPreview(true)}
+          >
+            Preview
+          </Button>
+        </div>
       </div>
-      <hr className="border-secondary" />
-      
-      <Accordion defaultActiveKey="0" flush>
-        {/* PHASE 1: OPENER */}
-        <Accordion.Item eventKey="0" className="bg-transparent text-white">
-          <Accordion.Header>1. The Intro & Health Check</Accordion.Header>
-          <Accordion.Body>
-            <p><strong>Rep:</strong> "The reason for my call is regarding our updated Final Expense plans..."</p>
-            <ul className="small text-info">
-              <li>Confirm Age (18-80)</li>
-              <li>Health Check: Not in hospital? Not terminal? >24 months to live?</li>
-            </ul>
-          </Accordion.Body>
-        </Accordion.Item>
 
-        {/* PHASE 2: DISCOVERY QUESTIONS */}
-        <Accordion.Item eventKey="1" className="bg-transparent text-white border-top border-secondary">
-          <Accordion.Header>2. Emotional Discovery ❤️</Accordion.Header>
-          <Accordion.Body>
-            <div className="p-2 border-start border-info mb-3">
-              <p className="small mb-1 text-uppercase text-muted">Question #1</p>
-              <p>“Is there a special person you’d like to make sure is protected... like your spouse or children? ❤️”</p>
-            </div>
-            <div className="p-2 border-start border-warning mb-3">
-              <p className="small mb-1 text-uppercase text-muted">Question #2</p>
-              <p>“Have you thought about whether you’d prefer a traditional burial ⚰️ or cremation 🔥?”</p>
-            </div>
-          </Accordion.Body>
-        </Accordion.Item>
+    {/* CONDITIONAL RENDERING */}
+    {isPreview ? (
+      <ScriptPreview script={localScript} />
+    ) : (
+      <>
+        {/* Your existing Accordion and Phase Logic here */}
+        <Button variant="outline-info" size="sm" onClick={addPhase} className="mb-3 w-100">
+          + Add New Phase
+        </Button>
+        {/* ... existing map logic ... */}
+      </>
+    )}
 
-        {/* PHASE 3: HANDOFF */}
-        <Accordion.Item eventKey="2" className="bg-transparent text-white border-top border-secondary">
-          <Accordion.Header>3. The Handoff (The Transfer)</Accordion.Header>
-          <Accordion.Body>
-             <p className="bg-info text-black p-2 rounded fw-bold">"I’ve got [First Name] from [Province] on the line. They’re looking to protect their family..."</p>
-             <p className="small mt-2">Wait 5 seconds to ensure connection.</p>
-          </Accordion.Body>
-        </Accordion.Item>
+    <div className="d-grid mt-4">
+      <Button variant="success" className="fw-bold py-2" onClick={() => onUpdate(localScript._id, localScript)}>
+        💾 Sync Changes to Server
+      </Button>
+    </div>
+
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h5 className="text-info mb-0">Phase Configurator</h5>
+        <Button variant="outline-info" size="sm" onClick={addPhase}>+ Add New Phase</Button>
+      </div>
+
+      <Accordion flush className="mb-4">
+        {localScript.phases.map((phase, pIdx) => (
+          <Accordion.Item eventKey={pIdx.toString()} key={pIdx} className="bg-transparent text-white border-bottom border-secondary">
+            <Accordion.Header className="bg-dark text-info">
+              {pIdx + 1}. {phase.title || "Untitled Phase"}
+            </Accordion.Header>
+            <Accordion.Body className="bg-dark">
+              <Row className="g-3">
+                <Col md={12}>
+                  <Form.Label className="small text-muted">Phase Title</Form.Label>
+                  <Form.Control className="bg-secondary border-0 text-white" value={phase.title} onChange={e => updatePhase(pIdx, "title", e.target.value)} />
+                </Col>
+                <Col md={12}>
+                  <Form.Label className="small text-muted">Core Script Text (The "What to Say")</Form.Label>
+                  <Form.Control as="textarea" rows={3} className="bg-secondary border-0 text-white" value={phase.content} onChange={e => updatePhase(pIdx, "content", e.target.value)} />
+                </Col>
+                
+                <Col md={12}>
+                  <div className="d-flex justify-content-between align-items-center mb-2 mt-3">
+                    <Form.Label className="small text-info mb-0">Discovery Questions</Form.Label>
+                    <Button variant="link" className="text-info p-0 text-decoration-none" onClick={() => addQuestion(pIdx)}>+ Add Question</Button>
+                  </div>
+                  <Stack gap={2}>
+                    {phase.questions.map((q, qIdx) => (
+                      <Row key={qIdx} className="g-2 align-items-center">
+                        <Col xs={1}><span className="text-muted">#{qIdx + 1}</span></Col>
+                        <Col>
+                          <Form.Control size="sm" className="bg-dark text-white border-secondary" placeholder="Ask about family/burial..." value={q.text} 
+                            onChange={e => {
+                                const newPhases = [...localScript.phases];
+                                newPhases[pIdx].questions[qIdx].text = e.target.value;
+                                setLocalScript({...localScript, phases: newPhases});
+                            }} 
+                          />
+                        </Col>
+                        <Col xs="auto">
+                          <Button variant="outline-danger" size="sm" onClick={() => {
+                             const newPhases = [...localScript.phases];
+                             newPhases[pIdx].questions.splice(qIdx, 1);
+                             setLocalScript({...localScript, phases: newPhases});
+                          }}>×</Button>
+                        </Col>
+                      </Row>
+                    ))}
+                  </Stack>
+                </Col>
+              </Row>
+              <div className="text-end mt-3">
+                <Button variant="outline-danger" size="sm" onClick={() => {
+                  const filtered = localScript.phases.filter((_, i) => i !== pIdx);
+                  setLocalScript({...localScript, phases: filtered});
+                }}>Remove This Phase</Button>
+              </div>
+            </Accordion.Body>
+          </Accordion.Item>
+        ))}
       </Accordion>
+
+      <div className="d-grid">
+        <Button variant="success" className="fw-bold py-2" onClick={() => onUpdate(localScript._id, localScript)}>
+          💾 Sync Changes to Server
+        </Button>
+      </div>
     </Card>
   );
 }
-export default DiscoveryScript;
+
+export default DiscoveryScriptEditor;
