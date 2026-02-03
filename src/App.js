@@ -1,24 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import ObjectionViewer from "./pages/ObjectionViewer";
+import Admin from "./pages/Admin";
+import { Navbar, Nav, Container } from "react-bootstrap";
+import ManageScripts from "./pages/ManageScripts";
+import AdminDashboard from "./pages/AdminDashboard";
+import BulkImporter from "./pages/BulkImporter";
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Navbar bg="dark" variant="dark" expand="lg">
+        <Container>
+          <Navbar.Brand as={Link} to="/">🛡️ Objection Crusher</Navbar.Brand>
+          <Nav className="ms-auto">
+            <Nav.Link as={Link} to="/">Home</Nav.Link>
+            <Nav.Link as={Link} to="/admin">Admin</Nav.Link>
+            <Nav.Link as={Link} to="/manage">Manage Scripts</Nav.Link>
+            <Nav.Link as={Link} to="/bulk">Bulk Importer</Nav.Link>
+            <Nav.Link as={Link} to="/admin_dashboard">Dashboard</Nav.Link>
+          </Nav>
+        </Container>
+      </Navbar>
+
+      <Routes>
+        <Route path="/" element={<ObjectionViewer />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/manage" element={<ManageScripts />} />
+        <Route path="/admin_dashboard" element={<AdminDashboard />} />
+        <Route path="/bulk" element={<BulkImporter />} />
+      </Routes>
+    </Router>
   );
 }
 
